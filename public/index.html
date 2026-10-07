@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>LLM Todo Agent</title>
+</head>
+<body>
+  <h1>Todo</h1>
+  <ul id="list"></ul>
+
+  <script>
+    async function loadTasks() {
+      const res = await fetch("/api/tasks");
+      const tasks = await res.json();
+
+      const list = document.getElementById("list");
+      list.innerHTML = "";
+
+      for (const t of tasks) {
+        const li = document.createElement("li");
+        const status = t.completed ? "✅" : "⬜";
+        const due = t.dueDate ? ` (due ${t.dueDate})` : "";
+        li.textContent = `${status} ${t.title}${due}`;
+        list.appendChild(li);
+      }
+    }
+
+    loadTasks();
+  </script>
+</body>
+</html>
