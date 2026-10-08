@@ -7,7 +7,9 @@
 <body>
   <h1>Todo</h1>
   <ul id="list"></ul>
-
+  <input id="msg" placeholder="e.g. Remind me to work on OOPS tomorrow" size="50">
+  <button id="send">Send</button>
+  <p id="reply"></p>
   <script>
     async function loadTasks() {
       const res = await fetch("/api/tasks");
@@ -24,8 +26,35 @@
         list.appendChild(li);
       }
     }
-
     loadTasks();
+    async function sendMessage() {
+    const input = document.getElementById("msg");
+    const replyEl = document.getElementById("reply");
+    const text = input.value.trim();
+    if (!text) return;
+
+    replyEl.textContent = "Thinking...";
+
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text }),
+      });
+      const data = await res.json();
+      replyEl.textContent = data.reply || data.error;
+    } catch (err) {
+      replyEl.textContent = "Network error. Is the server running?";
+    }
+
+    input.value = "";
+    loadTasks();
+  }
+
+  document.getElementById("send").addEventListener("click", sendMessage);
+  document.getElementById("msg").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") sendMessage();
+  });
   </script>
 </body>
 </html>

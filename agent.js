@@ -15,9 +15,7 @@ const groqTools = tools.map((t) => ({
 
 export async function runAgent(userMessage) {
   const today = new Date().toLocaleDateString("en-CA");
-
-  const system = `You are a todo assistant. Today's date is ${today}. Convert relative dates like "tomorrow" into YYYY-MM-DD. Use the tools to act, then confirm briefly to the user.`;
-
+  const system = `You are a todo assistant. Today's date is ${today}. Convert relative dates like "tomorrow" into YYYY-MM-DD. Use the tools to act, then confirm briefly to the user. Reply in plain text only, with no markdown, bold, or tables.`;
   const messages = [
     { role: "system", content: system },
     { role: "user", content: userMessage },

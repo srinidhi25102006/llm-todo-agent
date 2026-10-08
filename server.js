@@ -1,5 +1,6 @@
 import express from "express";
 import * as store from "./taskStore.js";
+import { runAgent } from "./agent.js";
 
 const app = express();
 app.use(express.json());
@@ -26,6 +27,18 @@ app.delete("/api/tasks/:id", (req, res) => {
   const deleted = store.deleteTask(Number(req.params.id));
   if (!deleted) return res.status(404).json({ error: "not found" });
   res.status(204).end();
+});
+app.post("/api/chat", async (req, res) => {
+  try {
+    const { message } = req.body;
+    if (!message) return res.status(400).json({ error: "message required" });
+
+    const reply = await runAgent(message);
+    res.json({ reply });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Agent failed" });
+  }
 });
 
 app.listen(3000, () => {
