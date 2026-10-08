@@ -1,60 +1,39 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>LLM Todo Agent</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Todo</h1>
-  <ul id="list"></ul>
-  <input id="msg" placeholder="e.g. Remind me to work on OOPS tomorrow" size="50">
-  <button id="send">Send</button>
-  <p id="reply"></p>
-  <script>
-    async function loadTasks() {
-      const res = await fetch("/api/tasks");
-      const tasks = await res.json();
+  <header>
+    <h1>Todo Agent</h1>
+    <p>Chat with the assistant to manage your tasks</p>
+  </header>
 
-      const list = document.getElementById("list");
-      list.innerHTML = "";
+  <main class="layout">
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Your tasks</h2>
+        <span id="task-count"></span>
+      </div>
+      <ul id="task-list"></ul>
+    </section>
 
-      for (const t of tasks) {
-        const li = document.createElement("li");
-        const status = t.completed ? "✅" : "⬜";
-        const due = t.dueDate ? ` (due ${t.dueDate})` : "";
-        li.textContent = `${status} ${t.title}${due}`;
-        list.appendChild(li);
-      }
-    }
-    loadTasks();
-    async function sendMessage() {
-    const input = document.getElementById("msg");
-    const replyEl = document.getElementById("reply");
-    const text = input.value.trim();
-    if (!text) return;
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Assistant</h2>
+      </div>
+      <div id="messages"></div>
+      <form id="chat-form">
+        <input id="chat-input" type="text" autocomplete="off"
+               placeholder="e.g. Remind me to work on OOPS tomorrow">
+        <button id="send-btn" type="submit">Send</button>
+      </form>
+    </section>
+  </main>
 
-    replyEl.textContent = "Thinking...";
-
-    try {
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text }),
-      });
-      const data = await res.json();
-      replyEl.textContent = data.reply || data.error;
-    } catch (err) {
-      replyEl.textContent = "Network error. Is the server running?";
-    }
-
-    input.value = "";
-    loadTasks();
-  }
-
-  document.getElementById("send").addEventListener("click", sendMessage);
-  document.getElementById("msg").addEventListener("keydown", (e) => {
-    if (e.key === "Enter") sendMessage();
-  });
-  </script>
+  <script src="app.js"></script>
 </body>
 </html>
